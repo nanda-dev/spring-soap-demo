@@ -32,12 +32,32 @@
 			<groupId>wsdl4j</groupId>
 			<artifactId>wsdl4j</artifactId>
 		</dependency>
+		
+		<!-- Add jaxb-api and an implementation for the same (jaxb-runtime) 
+			 to ensure the app runs in JVMs higher than 8.
+			 Will the JDK11 related profile added in the client app would also work?
+			 Need to check. -->
+		<!-- Disabling them here, as the app is being built to run on JDK8 for now. Modify/enable as needed.-->
+		<!-- 
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		 -->
+		 
+		 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -58,6 +78,8 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<!-- More documentation for this plugin can be seen here: 
+					https://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v2.5.0/xjc-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
 				<version>2.5.0</version>
@@ -70,6 +92,13 @@
 					</execution>
 				</executions>
 				<configuration>
+					<!--	src/main/xsd is the default folder where the jaxb2 plugin will look for xsd files. 
+							Override it using <sources>. 
+							Here, we are setting /src/resources/xsd folder to be scanned for xsds. 
+							We can very well specify the exact xsd file instead too, 
+							instead of setting a folder name which can have files other than xsds, which can cause errors. 
+							Exclusion filters need to be set inorder to avoid those errors.
+					-->
 					<sources>
 						<source>${project.basedir}/src/main/resources/xsd/countries.xsd</source>
 					</sources>
@@ -77,11 +106,33 @@
 					For example, if the NAMESPACE is given as "http://spring.io/guides/gs-producing-web-service", 
 					the package name would be: io.spring.guides.gs_producing_web_service  -->
 					<packageName>com.example.countriesws.xsd</packageName>
+					
+					<!-- By default, the outoutDirectory is: ${project.build.directory}/generated-sources/jaxb 
+						Eclipse should be able to identify it as a source directory as a source directory 
+						(make sure you have run 'mvn compile' or 'mvn install' first, to get the Java classes generated from xsd). 
+						If not, you might see ClassNotFound errors. 
+						Right click on target/generated-sources/jaxb folder > Build Path > Use as Source Folder to solve it.-->
+					<!-- Also, not a good idea to use src/man/java as the destination for generated files, and track it in version control. -->
+					<!-- <outputDirectory>${project.build.directory}/generated-sources/jaxb/</outputDirectory> -->
+					
+					<!-- clearOutputDir default value is true. Another reason not to use /src/main/java as outputDirectory, 
+					in case all your source code is accidentally wiped out during generate-source step!-->
 					<clearOutputDir>false</clearOutputDir>
+					
 					<!-- NOTE: If there are no changes to the xsd, source generation might not take place. 
 					Adding/removing a harmless whitespace/new-line in can be used as a hack, 
 					in case you need the source to be generated again.-->
 				</configuration>
+				<!-- Add 'activation' dependency for JDK versions higher than 8. -->
+				<!-- 
+				<dependencies>
+					<dependency>
+						<groupId>javax.activation</groupId>
+						<artifactId>activation</artifactId>
+						<version>1.1.1</version>
+					</dependency>
+				</dependencies>
+				-->
 			</plugin>
 		</plugins>
 	</build>

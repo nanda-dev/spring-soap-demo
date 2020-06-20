@@ -52,7 +52,8 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
+	
+	<!-- Profile to work with Java 11: -->
 	<profiles>
 		<profile>
 			<id>java11</id>
@@ -91,24 +92,68 @@
 				<configuration>
 					<schemaLanguage>WSDL</schemaLanguage>
 					<generatePackage>com.example.countrieswsclient.wsdl</generatePackage>
-					<!-- Use this if the WSDL is to be loaded from a running WebService's WSDL URL -->
+					<!-- Use this if the WSDL is to be loaded from a running WebService's 
+						WSDL URL-->
 					<!-- 
-					<schemas>
-						<schema>
-							<url>http://localhost:8080/ws/countries.wsdl</url>
-						</schema>
+					<schemas> 
+						<schema> 
+							<url>http://localhost:8080/ws/countries.wsdl</url> 
+						</schema> 
 					</schemas>
 					 -->
-					 <!-- Use this if the WSDL is to be loaded from a file saved locally -->
+					<!-- Use this if the WSDL is to be loaded from a file saved locally -->
 					<schemaDirectory>src/main/resources/wsdl</schemaDirectory>
 					<schemaIncludes>
 						<include>countries.wsdl</include>
 					</schemaIncludes>
-					<!--  Default directory where source are generated: ${project.build.directory}/generated-sources/xjc-->
-					<!-- <generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory> -->
+					
+					<!-- Default directory where source are generated: ${project.build.directory}/generated-sources/xjc -->
+					<generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
 				</configuration>
 			</plugin>
 			<!-- end::wsdl[] -->
+			
+			<!-- An alternate plugin to generate sources from WSDL -->
+			<!-- tag::alt-wsdl-plugin[] -->
+			<!-- <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					Use this if the WSDL is to be loaded from a running WebService's 
+						WSDL URL
+					
+					<wsdlUrls>
+						<wsdlUrl>https://country-service-ng.cfapps.io/ws/countries.wsdl</wsdlUrl>
+					</wsdlUrls>
+					
+
+					Use this if the WSDL is to be loaded from a file saved locally
+					<wsdlDirectory>src/main/resources/wsdl</wsdlDirectory>
+					<wsdlFiles>
+						<wsdlFile>countries.wsdl</wsdlFile>
+					</wsdlFiles>
+
+					Just a wild config obtained from a Google search result. Keeping 
+						it for now.
+					<vmArgs>
+						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+					</vmArgs>
+					<keep>true</keep>
+					<packageName>com.example.countrieswsclient.wsdl</packageName>
+					Default directory where source are generated: ${project.build.directory}/generated-sources/wsimport
+					<sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
+				</configuration>
+
+			</plugin> -->
+			<!-- end::alt-wsdl-plugin[] -->
 		</plugins>
 	</build>
 
