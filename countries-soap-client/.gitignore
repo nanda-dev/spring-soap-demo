@@ -29,3 +29,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Added at top level .gitignore to work properly. ###
+#**/.attach_pid*
